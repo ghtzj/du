@@ -1,0 +1,40 @@
+	//冒泡法
+void bubble_sort(int arr[], int sz)
+{
+	//确定冒泡排序的趟数n个元素需要进行n-1趟
+	int i = 0;
+	for (i = 0; i < sz - 1; i++)
+	{
+		//确定每一趟传递的次数
+		int  j = 0;
+		int flage = 1;//假定这一趟排序数据已经有序
+		for (j = 0; j < sz - 1 - i; j++)
+		{
+			if (arr[j] > arr[j + 1])
+			{
+				int tem = arr[j];
+				arr[j] = arr[j + 1];
+				arr[j + 1] = tem;
+				flage = 0;//本趟排序其实不完全有序
+			}
+
+		}
+		if(flage==1)//进行一趟发现两两不需要交换直接跳出循环  
+		{
+			break;
+		}
+	}
+}
+	int main()
+	{
+		int i = 0;
+		int arr[] = { 9,18,7,6,25,4,13,2,1,0 };//对arr进行排序，排成升序
+		int sz = sizeof arr/ sizeof arr[0];
+		//arr是数组，对arr进行传参，传过去的是数组arr首元素地址&arr[0]
+		bubble_sort(arr,sz);//冒泡排序函数
+		for (i = 0; i < sz; i++)
+		{
+			printf("%d   ", arr[i]);
+		}
+		return 0;
+	}

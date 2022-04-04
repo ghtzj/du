@@ -1,0 +1,207 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<time.h>
+#define ROW 9
+#define COL 9
+#define  ROWS ROW+2
+#define  COLS COL+2
+#define lei 10
+void initboard(char broad[ROWS][COLS], int rows, int cols,char set);
+void Display(char broad[ROWS][COLS], int row, int col);
+void setlei(char broad[ROWS][COLS], int row, int col);
+void findlei(char pan[ROWS][COLS],char cha[ROWS][COLS], int row, int col);
+void initboard(char broad[ROWS][COLS], int rows, int cols,char set)
+{
+	int i = 0;
+	int j = 0;
+	for (i = 0; i < rows; i++)
+	{
+		for (j = 0; j < cols; j++)
+		{
+			broad[i][j] = set;
+		}
+	}
+}
+void Display(char broad[ROWS][COLS], int row, int col)
+{
+	int i = 0;
+	int j = 0;
+	//打印列号
+	for (i = 0; i <=col; i++)
+	{
+		printf(" %d ",i);
+	}
+	printf("\n");
+	for (i = 1; i < row; i++)
+	{
+		//打印行号
+		for (i = 1; i <= col; i++)
+		{
+			printf(" %d ", i);
+
+			for (j = 1; j <= col; j++)
+			{
+				printf(" %c ", broad[i][j]);
+			}
+			printf("\n");
+		}
+	}
+}
+void setlei(char broad[ROWS][COLS], int row, int col)
+{
+	int bong = lei;
+	while (bong)
+	{
+		int x = rand()%row+1;
+		int y = rand() % col + 1;
+		if (broad[x][y] == '0')
+		{
+			broad[x][y] ='1';
+			bong--;
+		}
+
+	}
+}
+int getlei(char pan[ROWS][COLS],int x,int y)
+{
+	int i = 0;
+	int j = 0;
+	int a = 0;
+	for (i = x - 1; i <= x + 1; i++)
+	{
+		for (j = y - 1; j <= y + 1; j++)
+		{
+			a = a + pan[i][j];
+		}
+	}
+	return  a-9*'0';
+}
+void kai(char pan[ROWS][COLS], char cha[ROWS][COLS], int x, int y)
+{
+	int i = 0;
+	int j = 0;
+	if (getlei(pan, x, y) == 0)
+	{
+		cha[x][y] = ' ';
+
+		for (i = x - 1; i <= x + 1; i++)
+		{
+			for (j = y - 1; j <= y + 1; j++)
+			{
+				if (i > 0 && i <= ROW && j > 0 && j <= COL && pan[i][j] != 1 && cha[i][j] == '*')
+				{
+					kai(pan, cha, i, j);
+				}
+			}
+
+		}
+	}
+	//else
+	//{
+	//	int leishu = getlei(pan, x, y);
+	//	cha[x][y] = leishu + '0';//加上字符零，可代表acll，码中的数字字符
+	//	Display(cha, row, col);
+	//	win++;
+	//}
+}
+void findlei(char pan[ROWS][COLS], char cha[ROWS][COLS], int row, int col)
+{
+	int x = 0;
+	int y = 0;
+	int win = 0;
+	while (win < row * col - lei)
+	{
+		{
+			printf("请输入排查雷的坐标；");
+			scanf("%d%d", &x, &y);
+			if (x >= 1 && x <= row && y >= 1 && y <= col)
+			{
+				//踩雷
+				if (pan[x][y] == '1')
+				{
+					printf("哈哈，你踩雷啦\n");
+					Display(pan, row, col);
+					break;
+				}
+				//不是雷，计算统计周围有几个雷
+				else
+				{
+					kai(pan, cha, x, y);
+					int leishu = getlei(pan, x, y);
+					cha[x][y] = leishu + '0';//加上字符零，可代表acll，码中的数字字符
+					Display(cha, row, col);
+					win++;
+				}
+
+			}
+			else
+			{
+				printf("输入错误，请重新输入\n");
+			}
+		}
+	}
+	if (win == row * col - lei)
+	{
+		printf("排雷成功\n");
+		Display(pan, row, col);
+	}
+}
+void menu()
+{
+	printf("************\n");
+	printf("***1.play***\n");
+	printf("***0.exit***\n");
+	printf("************\n");
+}
+void game()
+{
+//雷的信息存储,1,布置好雷的信息，排查雷的信息
+//后台存在9*9棋盘，防止搜查越界，制成111*11棋盘
+	
+	//9*9的布雷矩阵
+	//布雷，雷盘
+	char pan[ROWS][COLS] = { 0 };//11*11棋盘，防止越界
+	//排查雷信息，显示盘
+	char cha[ROWS][COLS] = { 0 };//雷盘与显示盘大小一致，代码实现会简单
+	// 初始化
+	initboard(pan,ROWS,COLS,'0');
+	initboard(cha,ROWS,COLS,'*');
+	
+	//打印棋盘,不打印棋盘外圈，只打印9*9即可
+	//Display(pan,ROW,COL);//游戏中不必打印埋雷棋盘
+	Display(cha, ROW, COL);//打印无雷棋盘
+	//布置雷
+	setlei(pan, ROW, COL);//布置雷盘
+	//Display(pan, ROW, COL);
+	//扫雷
+	findlei(pan,cha,ROW,COL);
+
+}
+void test()
+{
+	int input=0;
+	srand((unsigned int)time(NULL));
+	do
+	{
+		menu();
+		printf("请选择；");
+		scanf("%d", &input);
+		switch (input)
+		{
+		case 1:
+			game();
+			break;
+		case 0:
+			printf("退出游戏\n");
+			break;
+		default:
+			printf("输入错误，重新输入\n");
+			break;
+		}
+	} while (input);//非零为真
+}
+int main()
+{
+	test();
+	return 0;
+}
